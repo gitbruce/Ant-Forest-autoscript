@@ -374,26 +374,39 @@ function Ant_forest(automator, unlock) {
     _get_post_energy();
   }
 
+  const _notifyTasker = function (minute) {
+       if ((isNaN(minute)) || (minute <= 1)){
+           second = 10
+       } else {
+           second = minute * 60
+       }
+       var secondStr = String(second)
+       app.sendBroadcast({
+           action: "net.dinglisch.android.tasker.ActionCodes.RUN_SCRIPT",
+           extras: {
+               name: "蚂蚁森林",
+               second: secondStr
+           }
+       });
+       log("已发送Tasker任务： after " + minute);
+  }
+
   return {
     exec: function() {
       let thread = threads.start(function() {
         events.setMaxListeners(0);
         events.observeToast();
       });
-      while (true) {
-        _delay(_min_countdown);
-        _listen_stop();
-        log("第 " + (++_current_time) + " 次运行");
-        _unlock.exec();
-        _collect_own();
-        _collect_friend();
-        if (_config.get("is_cycle")) sleep(1000);
-        events.removeAllListeners();
-        if (_has_next == false) {
-          log("收取结束");
-          break;
-        }
+        //_delay(_min_countdown);
+      _unlock.exec();
+      _collect_own();
+      _collect_friend();
+      if (_config.get("is_cycle")) sleep(1000);
+      events.removeAllListeners();
+      if (_has_next == false) {
+        log("收取结束");
       }
+      _notifyTasker(_min_countdown);
       thread.interrupt();
     }
   }
