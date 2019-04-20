@@ -407,9 +407,9 @@ function Ant_forest(automator, unlock) {
       _unlock.exec();
       _collect_own();
 
-      var my_time = new Date().toDateString() + " " + _max_time;
-      var my_datetime = Date.parse(my_time);
-      while ((my_datetime > new Date().getTime()) && (my_datetime-new Date().getTime()) < _waitMySeconds) {
+      var my_time_max = new Date().toDateString() + " " + _max_time;
+      var my_datetime_max = Date.parse(my_time_max);
+      while ((my_datetime_max > new Date().getTime()) && (my_datetime_max-new Date().getTime()) < _waitMySeconds) {
         log("循环获取自己能量");
           _collect_own();
           sleep(1000);
@@ -422,7 +422,7 @@ function Ant_forest(automator, unlock) {
         log("收取结束");
       }
 
-      if ((my_datetime-new Date().getTime()) < _waitMySeconds) {
+      if ((my_datetime_max > new Date().getTime()) && (my_datetime_max-new Date().getTime()) < _waitMySeconds) {
         log("开始关注自己的时间");
         _min_countdown = 0
       }
