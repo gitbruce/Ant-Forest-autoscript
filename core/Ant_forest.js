@@ -19,7 +19,13 @@ function Ant_forest(automator, unlock) {
       _fisrt_running = true, // 是否第一次进入蚂蚁森林
       _has_next = true,      // 是否下一次运行
       _avil_list = [],       // 可收取好友列表
+// additional 
+      _max_time = "7:18:50",       // 自己的结束时间
+      _waitMySeconds = 50 * 1000,       // 等待收取自己的时间
+
       _has_protect = [];     // 开启能量罩好友
+
+
 
   /***********************
    * 综合操作
@@ -214,7 +220,7 @@ function Ant_forest(automator, unlock) {
     if (descEndsWith("克").exists()) {
       descEndsWith("克").untilFind().forEach(function(ball) {
         _automator.clickCenter(ball);
-        sleep(500);
+        sleep(700);
       });
     }
   }
@@ -234,7 +240,7 @@ function Ant_forest(automator, unlock) {
             t = _config.get("color_offset");
         if (images.findColor(screen, "#f99236", {region: [x, y, w, h], threshold: t})) {
           _automator.clickCenter(ball);
-          sleep(500);
+          sleep(700);
         }
       });
     }
@@ -400,12 +406,27 @@ function Ant_forest(automator, unlock) {
         //_delay(_min_countdown);
       _unlock.exec();
       _collect_own();
+
+      var my_time = new Date().toDateString() + " " + _max_time;
+      var my_datetime = Date.parse(my_time);
+      while ((my_datetime > new Date().getTime()) && (my_datetime-new Date().getTime()) < _waitMySeconds) {
+        log("循环获取自己能量");
+          _collect_own();
+          sleep(1000);
+        }
+
       _collect_friend();
       if (_config.get("is_cycle")) sleep(1000);
       events.removeAllListeners();
       if (_has_next == false) {
         log("收取结束");
       }
+
+      if ((my_datetime-new Date().getTime()) < _waitMySeconds) {
+        log("开始关注自己的时间");
+        _min_countdown = 0
+      }
+
       _notifyTasker(_min_countdown);
       thread.interrupt();
     }
