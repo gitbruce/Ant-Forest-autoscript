@@ -20,7 +20,7 @@ function Ant_forest(automator, unlock) {
       _has_next = true,      // 是否下一次运行
       _avil_list = [],       // 可收取好友列表
 // additional 
-      _max_time = "7:18:50",       // 自己的结束时间
+      _max_time = "7:18:40",       // 自己的结束时间
       _waitMySeconds = 50 * 1000,       // 等待收取自己的时间
 
       _has_protect = [];     // 开启能量罩好友
@@ -361,10 +361,16 @@ function Ant_forest(automator, unlock) {
   const _collect_own = function() {
     log("开始收集自己能量");
     if (!textContains("蚂蚁森林").exists()) _start_app();
+    log(1);
     descEndsWith("背包").waitFor();
+    //sleep(3000);
+    log(2);
     _clear_popup();
+    log(3);
     _get_pre_energy();
+    log(4);
     _collect();
+    log(5);
     if (!_config.get("is_cycle")) _get_min_countdown_own();
     _fisrt_running = false;
   }
@@ -372,8 +378,12 @@ function Ant_forest(automator, unlock) {
   // 收取好友的能量
   const _collect_friend = function() {
     log("开始收集好友能量");
+    scrollDown();
+    scrollDown();
     descEndsWith("查看更多好友").findOne(_config.get("timeout_findOne")).click();
-    while(!textContains("好友排行榜").exists()) sleep(1000);
+    while(!textContains("好友排行榜").exists()) {
+        sleep(1000);
+   }
     _find_and_collect();
     if (!_config.get("is_cycle")) _get_min_countdown();
     _generate_next();
@@ -382,7 +392,7 @@ function Ant_forest(automator, unlock) {
 
   const _notifyTasker = function (minute) {
        if ((isNaN(minute)) || (minute <= 1)){
-           second = 10
+           second = 20
        } else {
            second = minute * 60
        }
@@ -411,8 +421,9 @@ function Ant_forest(automator, unlock) {
       var my_datetime_max = Date.parse(my_time_max);
       while ((my_datetime_max > new Date().getTime()) && (my_datetime_max-new Date().getTime()) < _waitMySeconds) {
         log("循环获取自己能量");
+        //log("time diff is "+(my_datetime_max-new Date().getTime()));
           _collect_own();
-          sleep(1000);
+          sleep(2000);
         }
 
       _collect_friend();
@@ -422,9 +433,9 @@ function Ant_forest(automator, unlock) {
         log("收取结束");
       }
 
-      if ((my_datetime_max > new Date().getTime()) && (my_datetime_max-new Date().getTime()) < _waitMySeconds) {
+      if ((my_datetime_max > new Date().getTime()) && (my_datetime_max-new Date().getTime()) < 2*60*1000) {
         log("开始关注自己的时间");
-        _min_countdown = 0
+        _min_countdown = 1
       }
 
       _notifyTasker(_min_countdown);
