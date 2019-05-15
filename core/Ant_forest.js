@@ -21,14 +21,13 @@ function Ant_forest(automator, unlock) {
       _avil_list = [],       // 可收取好友列表
 // additional 
       _max_time = "7:18:40",       // 自己的结束时间
+      _help_avoid = 7,    //在这个时间之后才进行帮助
       _waitMySeconds = 50 * 1000,       // 等待收取自己的时间
 
-      _has_protect = [];     // 开启能量罩好友
-
-
+      _has_protect = [];     // 开启能量罩好友      
 
   /***********************
-   * 综合操作
+   * 综合操作 
    ***********************/
 
   // 进入蚂蚁森林主页
@@ -255,7 +254,7 @@ function Ant_forest(automator, unlock) {
         h = obj.bounds().height() - 10,
         t = _config.get("color_offset");
     if (h > 0 && !obj.child(len - 2).childCount()) {
-      if (_config.get("help_friend")) {
+      if (_config.get("help_friend") && (new Date().getHours() != _help_avoid)) {
         return images.findColor(screen, "#1da06a", {region: [x, y, w, h], threshold: t}) || images.findColor(screen, "#f99236", {region: [x, y, w, h], threshold: t});
       } else {
         return images.findColor(screen, "#1da06a", {region: [x, y, w, h], threshold: t});
@@ -392,7 +391,7 @@ function Ant_forest(automator, unlock) {
 
   const _notifyTasker = function (minute) {
        if ((isNaN(minute)) || (minute <= 1)){
-           second = 20
+           second = 30
        } else {
            second = minute * 60
        }
@@ -437,8 +436,8 @@ function Ant_forest(automator, unlock) {
         log("开始关注自己的时间");
         _min_countdown = 1
       }
-
-      _notifyTasker(_min_countdown);
+      if (_min_countdown > 0)
+        _notifyTasker(_min_countdown);
       thread.interrupt();
     }
   }
